@@ -1,0 +1,109 @@
+figura(4,1,0,0).
+figura(2,3,0,1).
+figura(4,2,0,2).
+figura(2,2,1,0).
+figura(0,0,1,1).
+figura(2,0,1,2).
+figura(2,1,2,0).
+figura(1,1,2,1).
+figura(4,3,2,2).
+dim(3).
+
+collegati(X,Y,X2,Y2):-figura(0,_ ,X,Y), X2 = X-1, Y2 = Y, conn(X,Y, "up"), figura(_,_,X2,Y2).
+collegati(X,Y,X2,Y2):-figura(0,_ ,X,Y), X2 = X+1, Y2 = Y, conn(X,Y, "down"), figura(_,_,X2,Y2).
+collegati(X,Y,X2,Y2):-figura(0,_ ,X,Y), Y2 = Y-1, X2 = X, conn(X,Y, "left"), figura(_,_,X2,Y2).
+collegati(X,Y,X2,Y2):-figura(0,_ ,X,Y), Y2 = Y+1, X2 = X, conn(X,Y, "right"), figura(_,_,X2,Y2).
+
+collegati(X,Y,X2,Y2):-collegati(_,_,X,Y), X2 = X-1, Y2 = Y, conn(X,Y, "up"), figura(_,_,X2,Y2).
+collegati(X,Y,X2,Y2):-collegati(_,_,X,Y), X2 = X+1, Y2 = Y, conn(X,Y, "down"), figura(_,_,X2,Y2).
+collegati(X,Y,X2,Y2):-collegati(_,_,X,Y), Y2 = Y-1, X2 = X, conn(X,Y, "left"), figura(_,_,X2,Y2).
+collegati(X,Y,X2,Y2):-collegati(_,_,X,Y), Y2 = Y+1, X2 = X, conn(X,Y, "right"), figura(_,_,X2,Y2).
+
+
+
+
+% _|_
+conn(X,Y,Dir):-tile(0,0,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(0,0,X,Y), Dir="left".
+conn(X,Y,Dir):-tile(0,0,X,Y), Dir="right".
+
+% |-
+conn(X,Y,Dir):-tile(0,1,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(0,1,X,Y), Dir="down".
+conn(X,Y,Dir):-tile(0,1,X,Y), Dir="right".
+
+% T
+conn(X,Y,Dir):-tile(0,2,X,Y), Dir="right".
+conn(X,Y,Dir):-tile(0,2,X,Y), Dir="down".
+conn(X,Y,Dir):-tile(0,2,X,Y), Dir="left".
+
+% -|
+conn(X,Y,Dir):-tile(0,3,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(0,3,X,Y), Dir="down".
+conn(X,Y,Dir):-tile(0,3,X,Y), Dir="left".
+
+% |
+conn(X,Y,Dir):-tile(1,0,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(1,0,X,Y), Dir="down".
+
+% ---
+conn(X,Y,Dir):-tile(1,1,X,Y), Dir="left".
+conn(X,Y,Dir):-tile(1,1,X,Y), Dir="right".
+
+% _|
+conn(X,Y,Dir):-tile(2,0,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(2,0,X,Y), Dir="left".
+
+% |_
+conn(X,Y,Dir):-tile(2,1,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(2,1,X,Y), Dir="right".
+
+% r
+conn(X,Y,Dir):-tile(2,2,X,Y), Dir="right".
+conn(X,Y,Dir):-tile(2,2,X,Y), Dir="down".
+
+% 7
+conn(X,Y,Dir):-tile(2,3,X,Y), Dir="down".
+conn(X,Y,Dir):-tile(2,3,X,Y), Dir="left".
+
+% _|_
+conn(X,Y,Dir):-tile(3,0,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(3,0,X,Y), Dir="left".
+conn(X,Y,Dir):-tile(3,0,X,Y), Dir="right".
+
+% |-
+conn(X,Y,Dir):-tile(3,1,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(3,1,X,Y), Dir="down".
+conn(X,Y,Dir):-tile(3,1,X,Y), Dir="right".
+
+% T
+conn(X,Y,Dir):-tile(3,2,X,Y), Dir="right".
+conn(X,Y,Dir):-tile(3,2,X,Y), Dir="down".
+conn(X,Y,Dir):-tile(3,2,X,Y), Dir="left".
+
+% -|
+conn(X,Y,Dir):-tile(3,3,X,Y), Dir="up".
+conn(X,Y,Dir):-tile(3,3,X,Y), Dir="down".
+conn(X,Y,Dir):-tile(3,3,X,Y), Dir="left".
+
+% !
+conn(X,Y,Dir):-tile(4,0,X,Y), Dir="up".
+
+% o-
+conn(X,Y,Dir):-tile(4,1,X,Y), Dir="right".
+
+% i
+conn(X,Y,Dir):-tile(4,2,X,Y), Dir="down".
+
+% -o
+conn(X,Y,Dir):-tile(4,3,X,Y), Dir="left".
+
+:-conn(0,Y,"up").
+:-conn(X,Y,"down"), dim(D), X = D-1.
+:-conn(X,0,"left").
+:-conn(X,Y,"right"), dim(D), Y = D-1.
+
+:- conn(X,Y,"up"), not conn(X-1,Y,"down").
+:- conn(X,Y,"down"), not conn(X+1,Y,"up").
+:- conn(X,Y,"left"), not conn(X,Y-1,"right").
+:- conn(X,Y,"right"), not conn(X,Y+1,"left").
