@@ -24,7 +24,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -58,22 +57,24 @@ public class Controller {
         gameInitialize(selezione);
     }
 
-    public void gameInitialize(String selezione){
+    public void gameInitialize(String selezione) {
 
         int dim = 0;
         String mappa = "";
 
         griglia.getChildren().clear();
+        griglia.setDisable(false);
+        Reset.setDisable(false);
+        Solve.setDisable(false);
 
-        if(selezione.equals("Facile")){
+        //scelta mappa da caricare
+        if (selezione.equals("Facile")) {
             dim = 5;
             mappa = "maps";
-        }
-        else if(selezione.equals("Medio")){
+        } else if (selezione.equals("Medio")) {
             dim = 7;
             mappa = "maps-medio";
-        }
-        else if(selezione.equals("Difficile")){
+        } else if (selezione.equals("Difficile")) {
             dim = 11;
             mappa = "maps-difficile";
         }
@@ -85,12 +86,12 @@ public class Controller {
         //Scelta random del file da leggere
         int randomFile = rand.nextInt(10);
 
-        //contenuto File
+        //lettura contenuto File
         String s;
         String stringa = "";
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\Orion\\IdeaProjects\\Circuits\\src\\main\\resources\\"+ mappa +"\\map" + randomFile + ".txt"));
+            BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\Orion\\IdeaProjects\\Circuits\\src\\main\\resources\\" + mappa + "\\map" + randomFile + ".txt"));
             s = br.readLine();
             System.out.println("File selezionato: " + randomFile + ".txt");
             while (s != null) {
@@ -116,7 +117,7 @@ public class Controller {
                 Figura f = new Figura(tipo, i, j, rotazione);
                 matriceFigura[i][j] = f;
                 griglia.add(f, j, i);
-                if(indice < s1.length-1) {
+                if (indice < s1.length - 1) {
                     indice++;
                 }
             }
@@ -131,7 +132,6 @@ public class Controller {
             }
         });
     }
-
 
 
     public boolean isConnected(Figura[][] matrice) {
@@ -185,16 +185,76 @@ public class Controller {
         }
 
         if (nReq == nCon) {
-            connected = true;
+
+            connected = tuttoConnesso(matrice);
+
+
         }
-        
+
         return connected;
     }
 
+    public boolean tuttoConnesso(Figura[][] matrice) {
+
+        int n_Lampadine = 0;
+        int n_lamp_Conn = 0;
+        Figura centro = new Figura();
+
+        for (Figura[] f : matrice) {
+            for(Figura f1: f){
+                if (f1.getTipo() == 4){
+                    n_Lampadine++;
+                }
+                if(f1.getTipo() == 0){
+                    centro = f1;
+                }
+            }
+        }
+
+        n_lamp_Conn = getNeighbor(matrice, centro, "", n_lamp_Conn);
+
+        if(n_Lampadine == n_lamp_Conn){
+            return true;
+        }
+
+        return false;
+    }
+
+    public int getNeighbor(Figura[][] matrice, Figura fig, String dir, int num_lamp){
+        int count = num_lamp;
+        if(fig.getTipo() == 4){
+            count++;
+        }else{
+            if(!dir.equals("down")){
+                if(fig.isConnectedUp()){
+                    Figura f = matrice[fig.getRow()-1][fig.getCol()];
+                    count = getNeighbor(matrice, f, "up", count);
+                }
+            }
+            if(!dir.equals("up")){
+                if(fig.isConnectedDown()){
+                    Figura f = matrice[fig.getRow()+1][fig.getCol()];
+                    count = getNeighbor(matrice, f, "down", count);
+                }
+            }
+            if(!dir.equals("right")){
+                if(fig.isConnectedLeft()){
+                    Figura f = matrice[fig.getRow()][fig.getCol()-1];
+                    count = getNeighbor(matrice, f, "left", count);
+                }
+            }
+            if(!dir.equals("left")){
+                if(fig.isConnectedRight()){
+                    Figura f = matrice[fig.getRow()][fig.getCol()+1];
+                    count = getNeighbor(matrice, f, "right", count);
+                }
+            }
+        }
+        return count;
+    }
+
+
     public void createGame() {
-        griglia.setDisable(false);
-        Reset.setDisable(false);
-        Solve.setDisable(false);
         gameInitialize(livello.getValue().toString());
     }
 
@@ -220,15 +280,12 @@ public class Controller {
         }
 
         InputProgram facts = new ASPInputProgram();
-        InputProgram n_tiles = new ASPInputProgram();
         InputProgram dimensione = new ASPInputProgram();
-        AtomicInteger contatore = new AtomicInteger();
         griglia.getChildren().forEach(node -> {
             if (node instanceof Figura) {
                 Figura f = (Figura) node;
                 try {
                     facts.addObjectInput(f);
-                    contatore.getAndIncrement();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -259,10 +316,10 @@ public class Controller {
             if (node instanceof Figura) {
                 Figura f = (Figura) node;
                 try {
-                    for(Object obj : a.getAtoms()){
-                        if(obj instanceof Tile){
+                    for (Object obj : a.getAtoms()) {
+                        if (obj instanceof Tile) {
                             Tile t = (Tile) obj;
-                            if(f.getRow() == t.getRow() && f.getCol() == t.getCol()){
+                            if (f.getRow() == t.getRow() && f.getCol() == t.getCol()) {
                                 f.setRotazione(t.getRotazione());
                             }
                         }
