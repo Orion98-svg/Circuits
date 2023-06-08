@@ -23,9 +23,7 @@ import javafx.scene.layout.VBox;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Controller {
     public GridPane griglia = new GridPane();
@@ -68,15 +66,19 @@ public class Controller {
         Solve.setDisable(false);
 
         //scelta mappa da caricare
-        if (selezione.equals("Facile")) {
-            dim = 5;
-            mappa = "maps";
-        } else if (selezione.equals("Medio")) {
-            dim = 7;
-            mappa = "maps-medio";
-        } else if (selezione.equals("Difficile")) {
-            dim = 11;
-            mappa = "maps-difficile";
+        switch (selezione) {
+            case "Facile":
+                dim = 5;
+                mappa = "maps";
+                break;
+            case "Medio":
+                dim = 7;
+                mappa = "maps-medio";
+                break;
+            case "Difficile":
+                dim = 11;
+                mappa = "maps-difficile";
+                break;
         }
 
         endGame.setText("");
@@ -103,7 +105,7 @@ public class Controller {
             throw new RuntimeException(e);
         }
 
-        String s1[] = stringa.split(" ");
+        String[] s1 = stringa.split(" ");
 
         //for loop scorrimento griglia e creazione oggetti
         Figura[][] matriceFigura = new Figura[dim][dim];
@@ -213,11 +215,7 @@ public class Controller {
 
         n_lamp_Conn = getNeighbor(matrice, centro, "", n_lamp_Conn);
 
-        if(n_Lampadine == n_lamp_Conn){
-            return true;
-        }
-
-        return false;
+        return n_Lampadine == n_lamp_Conn;
     }
 
     public int getNeighbor(Figura[][] matrice, Figura fig, String dir, int num_lamp){
@@ -268,7 +266,7 @@ public class Controller {
         });
     }
 
-    public void callAsp(ActionEvent actionEvent) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+    public void callAsp(ActionEvent actionEvent) {
 
         handler = new DesktopHandler(new DLV2DesktopService("lib/dlv2.exe"));
 
