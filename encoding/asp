@@ -1,7 +1,9 @@
 rotazione(0..3).
 
 %guess rotazione
-tile(T,Rot,X,Y)|no_tile(T,Rot,X,Y) :- figura(T,_,X,Y), rotazione(Rot).
+%tile(T,Rot,X,Y)|no_tile(T,Rot,X,Y) :- figura(T,_,X,Y), rotazione(Rot).
+tile(T,0,X,Y)|tile(T,1,X,Y)|tile(T,2,X,Y)|tile(T,3,X,Y) :- figura(T,_,X,Y).
+
 
 %num totale di figure
 num_tiles(N):- dim(D), N = D*D.
